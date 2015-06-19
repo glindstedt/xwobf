@@ -5,6 +5,8 @@ A simple program that takes a screenshot of your desktop and obscures all
 visible windows. It is intended for use with programs such as i3lock to
 dynamically generate a lockscreen.
 
+<img src="https://raw.githubusercontent.com/glindste/i/master/xwobf.gif" height="450">
+
 ### Usage
 
 The program takes an optional filename argument, if the argument is given the
