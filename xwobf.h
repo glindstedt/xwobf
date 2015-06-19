@@ -32,6 +32,8 @@ typedef struct rectangle_t {
     size_t h;
 } rectangle_t;
 
+void print_usage();
+
 void print_rectangle(rectangle_t *rec);
 void print_rectangle_array(rectangle_t **rec_arr, size_t size);
 

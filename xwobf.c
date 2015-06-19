@@ -23,6 +23,7 @@
  */
 
 #include <stdio.h>
+#include <getopt.h>
 #include <xcb/xcb.h>
 #include <wand/MagickWand.h>
 
@@ -38,14 +39,39 @@ xcb_screen_t   *xcb_scr = NULL;
 rectangle_t      **rect = NULL;
 size_t        rect_size = 0;
 
-// Takes an optional filename as first argument
+void print_usage()
+{
+    printf("Usage: xwobf [OPTION]... DEST\n");
+    printf("  -h --help\tprint this message and exit\n");
+}
+
 int main(int argc, char **argv)
 {
     char *file;
-    if(argc < 2)
-        file = "screenshot.png";
-    else
-        file = argv[1];
+
+    char *optstring = "h";
+    struct option longopts[] = {
+        {"help", no_argument, NULL, 'h'},
+        {NULL, no_argument, NULL, 0}
+    };
+
+    int c;
+    while ((c = getopt_long(argc, argv, optstring, longopts, NULL)) != -1) {
+        switch(c) {
+            default:
+                print_usage();
+                exit(EXIT_SUCCESS);
+        }
+    }
+
+    // Read the destination file
+    if (optind < argc) {
+        file = argv[optind];
+    } else {
+        printf("No output file given.\n");
+        print_usage();
+        exit(EXIT_FAILURE);
+    }
 
     init();
 
