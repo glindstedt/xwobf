@@ -9,9 +9,7 @@ dynamically generate a lockscreen.
 
 ### Usage
 
-The program takes an optional filename argument, if the argument is given the
-final image will be written to that file. If no argument is given it defaults
-to `screenshot.png` in the current directory.
+The program takes a filename argument. The filename should end with a .png, .jpg or equivalent suffix.
 
 ### Example lock script using i3lock
 
