@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <getopt.h>
+#include <err.h>
 #include <xcb/xcb.h>
 #include <wand/MagickWand.h>
 
@@ -94,6 +95,8 @@ void init()
     // Connect to the x server
     xcb_c = xcb_connect(NULL, &screen_num);
 
+    check_xcb_error(xcb_c);
+
     // Find the root window
     xcb_screen_iterator_t s_it = xcb_setup_roots_iterator(xcb_get_setup(xcb_c));
     for (; s_it.rem; --screen_num, xcb_screen_next (&s_it)) {
@@ -107,6 +110,38 @@ void init()
     wand = NewMagickWand();
 
     find_rectangles();
+}
+
+// Check if the xcb_connection has encountered an error.
+// Exit if an error has occurred.
+void check_xcb_error(xcb_connection_t *xcb_connection)
+{
+    int xcb_error = xcb_connection_has_error(xcb_connection);
+    if (xcb_error > 0) {
+        switch(xcb_error) {
+            case XCB_CONN_ERROR:
+                errx(EXIT_FAILURE,"[XCB_CONN_ERROR]");
+                break;
+            case XCB_CONN_CLOSED_EXT_NOTSUPPORTED:
+                errx(EXIT_FAILURE,"[XCB_CONN_CLOSED_EXT_NOTSUPPORTED]");
+                break;
+            case XCB_CONN_CLOSED_MEM_INSUFFICIENT:
+                errx(EXIT_FAILURE,"[XCB_CONN_CLOSED_MEM_INSUFFICIENT]");
+                break;
+            case XCB_CONN_CLOSED_REQ_LEN_EXCEED:
+                errx(EXIT_FAILURE,"[XCB_CONN_CLOSED_REQ_LEN_EXCEED]");
+                break;
+            case XCB_CONN_CLOSED_PARSE_ERR:
+                errx(EXIT_FAILURE,"[XCB_CONN_CLOSED_PARSE_ERR]");
+                break;
+            case XCB_CONN_CLOSED_INVALID_SCREEN:
+                errx(EXIT_FAILURE,"[XCB_CONN_CLOSED_INVALID_SCREEN]");
+                break;
+            default:
+                printf("[UNKNOWN_ERROR] %d\n", xcb_error);
+                exit(EXIT_FAILURE);
+        }
+    }
 }
 
 void cleanup()
@@ -228,6 +263,7 @@ void print_rectangle(rectangle_t *rec)
     printf("Rec { x: %*zu y: %*zu w: %*zu h: %*zu }\n",
             4,rec->x,4,rec->y,4,rec->w,4,rec->h);
 }
+
 void print_rectangle_array(rectangle_t **rec_arr, size_t size)
 {
     printf("RecArray {\n");

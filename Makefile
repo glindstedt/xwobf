@@ -4,13 +4,18 @@ PREFIX ?= /usr
 BINDIR ?= $(PREFIX)/bin
 
 CFLAGS = -Wall -std=c99 `pkg-config --cflags MagickWand xcb`
+
 LIBS   = `pkg-config --libs MagickWand xcb`
 
 BIN = xwobf
 
-.PHONY: all clean install uninstall
+.PHONY: all debug clean install uninstall
 
+all: CFLAGS += -O3
 all: $(BIN)
+
+debug: CFLAGS += -DDEBUG -g
+debug: $(BIN)
 
 install: $(BIN)
 	@install -d "$(DESTDIR)$(BINDIR)"

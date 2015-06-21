@@ -25,6 +25,13 @@
 #ifndef _H_XWOBF
 #define _H_XWOBF
 
+#ifdef DEBUG
+  #define DEBUG_PRINT(fmt, args...) fprintf(stderr, "[DEBUG] %s:%d:%s(): " fmt,\
+          __FILE__, __LINE__, __func__, ##args);
+#else
+  #define DEBUG_PRINT(fmt, args...)
+#endif
+
 typedef struct rectangle_t {
     size_t x;
     size_t y;
@@ -34,10 +41,8 @@ typedef struct rectangle_t {
 
 void print_usage();
 
-void print_rectangle(rectangle_t *rec);
-void print_rectangle_array(rectangle_t **rec_arr, size_t size);
-
 void init();
+void check_xcb_error(xcb_connection_t *xcb_connection);
 void cleanup();
 
 int window_is_visible(xcb_window_t win);
@@ -48,5 +53,8 @@ void free_rectangles();
 
 void obscure_image();
 void obscure_rectangle(rectangle_t *rec);
+
+void print_rectangle(rectangle_t *rec);
+void print_rectangle_array(rectangle_t **rec_arr, size_t size);
 
 #endif
