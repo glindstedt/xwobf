@@ -15,7 +15,8 @@ The program takes a filename argument. The filename should end with a .png, .jpg
 
 ```
 #!/bin/bash
-xwobf -s 5 -f /tmp/.i3lock.png
+# xwobf -s 5 -f /tmp/.i3lock.png
+xwobf /tmp/.i3lock.png
 i3lock -i /tmp/.i3lock.png
 ```
 
