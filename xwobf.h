@@ -51,8 +51,8 @@ rectangle_t *get_rectangle(xcb_window_t win);
 void find_rectangles();
 void free_rectangles();
 
-void obscure_image(int blur_size);
-void obscure_rectangle(rectangle_t *rec, int blur_size);
+void obscure_image(int blur_size, int fuzzy);
+void obscure_rectangle(rectangle_t *rec, int blur_size, int fuzzy);
 
 void print_rectangle(rectangle_t *rec);
 void print_rectangle_array(rectangle_t **rec_arr, size_t size);

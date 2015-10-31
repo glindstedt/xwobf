@@ -43,19 +43,23 @@ size_t        rect_size = 0;
 void print_usage()
 {
     printf("Usage: xwobf [OPTION]... DEST\n");
-    printf("  -h --help\tprint this message and exit\n");
+    printf("  -h --help\t\tprint this message and exit\n");
+    printf("  -s pixel_size\t\tadjust the obfuscation strength (default=9)\n");
+    printf("  --size=pixel_size\n"); 
+    printf("  -f --fuzzy\t\tadd a blur effect\n");
 }
 
 int main(int argc, char **argv)
 {
     char *file;
-    int blur_size;
-    blur_size = 9;
+    int pixel_size = 9;
+    int fuzzy = 0;
 
-    char *optstring = "hs:";
+    char *optstring = "hs:f";
     struct option longopts[] = {
         {"help", no_argument, NULL, 'h'},
         {"size",  required_argument, NULL,  's' },
+        {"fuzzy",  no_argument, NULL,  'f' },
         {NULL, no_argument, NULL, 0}
     };
 
@@ -63,10 +67,13 @@ int main(int argc, char **argv)
     while ((c = getopt_long(argc, argv, optstring, longopts, NULL)) != -1) {
         switch(c) {
             case 's':
-                if (sscanf (optarg, "%i", &blur_size)!=1) {
+                if (sscanf (optarg, "%i", &pixel_size)!=1) {
                     puts("Size argument should be an integer");
                     exit(EXIT_FAILURE);    
                 }
+                break;
+            case 'f':
+                fuzzy = 1;
                 break;
             default:
                 print_usage();
@@ -87,7 +94,7 @@ int main(int argc, char **argv)
 
     (void)MagickReadImage(wand,"x:root");
 
-    obscure_image(blur_size);
+    obscure_image(pixel_size, fuzzy);
 
     (void)MagickWriteImage(wand,file);
 
@@ -165,23 +172,25 @@ void cleanup()
 }
 
 // Obscure the image!
-void obscure_image(int blur_size)
+void obscure_image(int blur_size, int fuzzy)
 {
     for(size_t i = 0; i < rect_size; ++i) {
-        obscure_rectangle(rect[i], blur_size);
+        obscure_rectangle(rect[i], blur_size, fuzzy);
     }
 }
 
 // Obscure the area within the given rectangle
-void obscure_rectangle(rectangle_t *rec, int blur_size)
+void obscure_rectangle(rectangle_t *rec, int pixel_size, int fuzzy)
 {
     if ((obs_wand = CloneMagickWand(wand))) {
         (void)MagickCropImage(obs_wand, rec->w, rec->h, rec->x, rec->y);
 
         // This is where the magick happens
-        size_t pixel_size = blur_size;
         (void)MagickResizeImage(obs_wand, (rec->w)/pixel_size, (rec->h)/pixel_size,
                 PointFilter, 0);
+        if (fuzzy) {
+                (void)MagickBlurImage(obs_wand, 0, 1);
+        }        
         (void)MagickResizeImage(obs_wand, rec->w, rec->h,
                 PointFilter, 0);
 
