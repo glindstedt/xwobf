@@ -49,16 +49,25 @@ void print_usage()
 int main(int argc, char **argv)
 {
     char *file;
+    int blur_size;
+    blur_size = 9;
 
-    char *optstring = "h";
+    char *optstring = "hs:";
     struct option longopts[] = {
         {"help", no_argument, NULL, 'h'},
+        {"size",  required_argument, NULL,  's' },
         {NULL, no_argument, NULL, 0}
     };
 
     int c;
     while ((c = getopt_long(argc, argv, optstring, longopts, NULL)) != -1) {
         switch(c) {
+            case 's':
+                if (sscanf (optarg, "%i", &blur_size)!=1) {
+                    puts("Size argument should be an integer");
+                    exit(EXIT_FAILURE);    
+                }
+                break;
             default:
                 print_usage();
                 exit(EXIT_SUCCESS);
@@ -78,7 +87,7 @@ int main(int argc, char **argv)
 
     (void)MagickReadImage(wand,"x:root");
 
-    obscure_image();
+    obscure_image(blur_size);
 
     (void)MagickWriteImage(wand,file);
 
@@ -156,21 +165,21 @@ void cleanup()
 }
 
 // Obscure the image!
-void obscure_image()
+void obscure_image(int blur_size)
 {
     for(size_t i = 0; i < rect_size; ++i) {
-        obscure_rectangle(rect[i]);
+        obscure_rectangle(rect[i], blur_size);
     }
 }
 
 // Obscure the area within the given rectangle
-void obscure_rectangle(rectangle_t *rec)
+void obscure_rectangle(rectangle_t *rec, int blur_size)
 {
     if ((obs_wand = CloneMagickWand(wand))) {
         (void)MagickCropImage(obs_wand, rec->w, rec->h, rec->x, rec->y);
 
         // This is where the magick happens
-        size_t pixel_size = 9;
+        size_t pixel_size = blur_size;
         (void)MagickResizeImage(obs_wand, (rec->w)/pixel_size, (rec->h)/pixel_size,
                 PointFilter, 0);
         (void)MagickResizeImage(obs_wand, rec->w, rec->h,
