@@ -45,7 +45,7 @@ void print_usage()
     printf("Usage: xwobf [OPTION]... DEST\n");
     printf("  -h --help\t\tprint this message and exit\n");
     printf("  -s pixel_size\t\tadjust the obfuscation strength (default=9)\n");
-    printf("  --size=pixel_size\n"); 
+    printf("  --size=pixel_size\n");
     printf("  -f --fuzzy\t\tadd a blur effect\n");
 }
 
@@ -68,8 +68,12 @@ int main(int argc, char **argv)
         switch(c) {
             case 's':
                 if (sscanf (optarg, "%i", &pixel_size)!=1) {
-                    puts("Size argument should be an integer");
-                    exit(EXIT_FAILURE);    
+                    printf("Size argument should be an integer.\n");
+                    exit(EXIT_FAILURE);
+                }
+                if (pixel_size < 1) {
+                    printf("Size argument must be superior or equal to 1. Continuing with 1...\n");
+                    pixel_size = 1;
                 }
                 break;
             case 'f':
@@ -172,10 +176,10 @@ void cleanup()
 }
 
 // Obscure the image!
-void obscure_image(int blur_size, int fuzzy)
+void obscure_image(int pixel_size, int fuzzy)
 {
     for(size_t i = 0; i < rect_size; ++i) {
-        obscure_rectangle(rect[i], blur_size, fuzzy);
+        obscure_rectangle(rect[i], pixel_size, fuzzy);
     }
 }
 
@@ -190,7 +194,7 @@ void obscure_rectangle(rectangle_t *rec, int pixel_size, int fuzzy)
                 PointFilter, 0);
         if (fuzzy) {
                 (void)MagickBlurImage(obs_wand, 0, 1);
-        }        
+        }
         (void)MagickResizeImage(obs_wand, rec->w, rec->h,
                 PointFilter, 0);
 
