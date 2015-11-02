@@ -9,12 +9,13 @@ dynamically generate a lockscreen.
 
 ### Usage
 
-The program takes a filename argument. The filename should end with a .png, .jpg or equivalent suffix.
+The program takes a filename argument. The filename should end with a .png, .jpg or equivalent suffix. The -s (--size) argument lets you set the radius of the pixellation effect, and the -f (--fuzzy) option blurs the resulting image.
 
 ### Example lock script using i3lock
 
 ```
 #!/bin/bash
+# xwobf -s 5 -f /tmp/.i3lock.png
 xwobf /tmp/.i3lock.png
 i3lock -i /tmp/.i3lock.png
 ```
