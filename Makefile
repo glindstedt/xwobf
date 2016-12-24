@@ -25,7 +25,7 @@ uninstall:
 	@rm -f "$(DESTDIR)$(BINDIR)/xwobf"
 
 xwobf: xwobf.o
-	$(CC) $(LIBS) xwobf.o -o $(BIN)
+	$(CC) xwobf.o -o $(BIN) $(LIBS)
 
 xwobf.o: xwobf.c
 	$(CC) $(CFLAGS) -c xwobf.c
