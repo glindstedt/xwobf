@@ -26,7 +26,7 @@
 #include <getopt.h>
 #include <err.h>
 #include <xcb/xcb.h>
-#include <wand/MagickWand.h>
+#include <MagickWand/MagickWand.h>
 
 #include "xwobf.h"
 
@@ -191,14 +191,14 @@ void obscure_rectangle(rectangle_t *rec, int pixel_size, int fuzzy)
 
         // This is where the magick happens
         (void)MagickResizeImage(obs_wand, (rec->w)/pixel_size, (rec->h)/pixel_size,
-                PointFilter, 0);
+                PointFilter);
         if (fuzzy) {
                 (void)MagickBlurImage(obs_wand, 0, 1);
         }
         (void)MagickResizeImage(obs_wand, rec->w, rec->h,
-                PointFilter, 0);
+                PointFilter);
 
-        (void)MagickCompositeImage(wand, obs_wand, OverCompositeOp, rec->x, rec->y);
+        (void)MagickCompositeImage(wand, obs_wand, OverCompositeOp, MagickTrue, rec->x, rec->y);
 
         obs_wand = DestroyMagickWand(obs_wand);
     }
